@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos - Categoría</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <img src="imagen/logocajas.png" alt="Logo Instituto Cajas" class="logo-sidebar">
+                </div>
+                <h3>IESTP "AACD"</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item" onclick="volverDashboard()">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📁</span>
+                    <span id="sidebarProyectosText">Proyectos</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span id="userInitials">U</span>
+                    </div>
+                    <div class="user-details">
+                        <p class="user-name" id="userName">Usuario</p>
+                        <p class="user-role" id="userRole">Rol</p>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <span>🚪</span> Salir
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <button class="btn-back" onclick="volverDashboard()">← Volver</button>
+                    <h1 id="categoriaTitulo">Proyectos</h1>
+                </div>
+                <div class="top-bar-actions">
+                    <!-- Este botón solo se muestra para investigadores -->
+                    <button class="btn-primary" id="btnNuevoProyecto" onclick="mostrarModalNuevoProyecto()"
+                        style="display: none;">
+                        + Nuevo Proyecto
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="proyectos-grid" id="proyectosGrid">
+                    <!-- Se llenará dinámicamente con proyectos -->
+                </div>
+
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📁</div>
+                    <h3 id="emptyStateTitle">No hay proyectos aún</h3>
+                    <p id="emptyStateMessage">Comienza creando tu primer proyecto</p>
+                    <button class="btn-primary" id="btnEmptyStateCrear" onclick="mostrarModalNuevoProyecto()"
+                        style="display: none;">
+                        + Crear Proyecto
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Proyecto (Solo para investigadores) -->
+    <!-- Modal Nuevo Proyecto - INFORMACIÓN GENERAL DEL PROYECTO -->
+    <div id="modalNuevoProyecto" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📋 Información General del Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModalNuevoProyecto()">&times;</button>
+            </div>
+            <form id="formNuevoProyecto" class="modal-body">
+                <div class="alert alert-info" style="margin-bottom: 20px;">
+                    <strong>ℹ️ Primer Entregable:</strong> Complete todos los campos para generar automáticamente el
+                    Reporte de Constancia de Informe General.
+                </div>
+
+                <!-- Título del Proyecto -->
+                <div class="form-group">
+                    <label for="tituloProyecto">Título del Proyecto *</label>
+                    <input type="text" id="tituloProyecto" required placeholder="Ingrese el título del proyecto">
+                </div>
+
+                <!-- Tipo de Investigación y Programa de Estudio -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoInvestigacion">Tipo de Investigación *</label>
+                        <select id="tipoInvestigacion" required>
+                            <option value="">Seleccione...</option>
+                            <option value="aplicada">Investigación Aplicada</option>
+                            <option value="innovacion">Innovación Pedagógica</option>
+                            <option value="innovacion">Innovación Tecnológica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="programaEstudio">Programa de Estudio *</label>
+                        <select id="programaEstudio" required>
+                            <option value="">Seleccione...</option>
+                            <option value="asistencia-administrativa">Asistencia Administrativa</option>
+                            <option value="diseno-programacion-web">Diseño y Programación Web</option>
+                            <option value="electricidad-industrial">Electricidad Industrial</option>
+                            <option value="electronica-industrial">Electrónica industrial</option>
+                            <option value="mantenimiento-maquinaria-pesada">Mantenimiento de Maquinaria Pesada</option>
+                            <option value="mecatronica-automotriz">Mecatrónica automotriz</option>
+                            <option value="mecanica-produccion-industrial">Mecánica de producción industrial</option>
+                            <option value="metalurgia">Metalurgia</option>
+                            <option value="tecnologia-analisis-quimico">Tecnología de Análisis Químico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Línea de Investigación -->
+                <div class="form-group">
+                    <label for="lineaInvestigacion">Línea de Investigación *</label>
+                    <select id="lineaInvestigacion" required disabled>
+                        <option value="">Primero seleccione un Programa de Estudio</option>
+                    </select>
+                </div>
+
+                <!-- Integrantes -->
+                <div class="form-group">
+                    <label for="integrantes">Integrante(s) del Proyecto *</label>
+                    <textarea id="integrantes" required rows="3"
+                        placeholder="Ingrese los nombres de los integrantes (separados por coma)&#10;Ejemplo: Juan Pérez, María García, Carlos López"></textarea>
+                    <small>💡 Ingrese los nombres completos separados por comas</small>
+                </div>
+
+                <!-- Objetivo del Proyecto -->
+                <div class="form-group">
+                    <label for="objetivoProyecto">Objetivo del Proyecto *</label>
+                    <textarea id="objetivoProyecto" required rows="4"
+                        placeholder="Describa el objetivo principal del proyecto"></textarea>
+                </div>
+
+                <!-- Beneficiarios y Localización -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="beneficiarios">Beneficiarios *</label>
+                        <input type="text" id="beneficiarios" required placeholder="¿Quiénes se beneficiarán?">
+                    </div>
+                    <div class="form-group">
+                        <label for="localizacion">Localización *</label>
+                        <input type="text" id="localizacion" required placeholder="Lugar donde se realizará">
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fechaInicio">Fecha de Inicio *</label>
+                        <input type="date" id="fechaInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaFinalizacion">Fecha de Finalización *</label>
+                        <input type="date" id="fechaFinalizacion" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalNuevoProyecto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">📄 Crear Proyecto </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Proyecto -->
+    <div id="modalEditarProyecto" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>✏️ Editar Información del Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModalEditarProyecto()">&times;</button>
+            </div>
+            <form id="formEditarProyecto" class="modal-body">
+                <input type="hidden" id="editProyectoId">
+
+                <div class="alert alert-warning" style="margin-bottom: 20px;">
+                    <strong>⚠️ Atención:</strong> Al editar el proyecto, se regenerará el reporte automáticamente con
+                    los nuevos datos.
+                </div>
+
+                <!-- Título del Proyecto -->
+                <div class="form-group">
+                    <label for="editTituloProyecto">Título del Proyecto *</label>
+                    <input type="text" id="editTituloProyecto" required>
+                </div>
+
+                <!-- Tipo de Investigación y Programa de Estudio -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTipoInvestigacion">Tipo de Investigación *</label>
+                        <select id="editTipoInvestigacion" required>
+                            <option value="">Seleccione...</option>
+                            <option value="aplicada">Aplicada</option>
+                            <option value="innovacion">Innovación</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProgramaEstudio">Programa de Estudio *</label>
+                        <select id="editProgramaEstudio" required>
+                            <option value="">Seleccione...</option>
+                            <option value="asistencia-administrativa">Asistencia Administrativa</option>
+                            <option value="diseno-programacion-web">Diseño y Programación Web</option>
+                            <option value="electricidad-industrial">Electricidad Industrial</option>
+                            <option value="electronica-industrial">Electrónica industrial</option>
+                            <option value="mantenimiento-maquinaria-pesada">Mantenimiento de Maquinaria Pesada</option>
+                            <option value="mecatronica-automotriz">Mecatrónica automotriz</option>
+                            <option value="mecanica-produccion-industrial">Mecánica de producción industrial</option>
+                            <option value="metalurgia">Metalurgia</option>
+                            <option value="tecnologia-analisis-quimico">Tecnología de Análisis Químico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Línea de Investigación -->
+                <div class="form-group">
+                    <label for="editLineaInvestigacion">Línea de Investigación *</label>
+                    <select id="editLineaInvestigacion" required disabled>
+                        <option value="">Primero seleccione un Programa de Estudio</option>
+                    </select>
+                </div>
+
+                <!-- Integrantes -->
+                <div class="form-group">
+                    <label for="editIntegrantes">Integrante(s) del Proyecto *</label>
+                    <textarea id="editIntegrantes" required rows="3"></textarea>
+                </div>
+
+                <!-- Objetivo del Proyecto -->
+                <div class="form-group">
+                    <label for="editObjetivoProyecto">Objetivo del Proyecto *</label>
+                    <textarea id="editObjetivoProyecto" required rows="4"></textarea>
+                </div>
+
+                <!-- Beneficiarios y Localización -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBeneficiarios">Beneficiarios *</label>
+                        <input type="text" id="editBeneficiarios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLocalizacion">Localización *</label>
+                        <input type="text" id="editLocalizacion" required>
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFechaInicio">Fecha de Inicio *</label>
+                        <input type="date" id="editFechaInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFechaFinalizacion">Fecha de Finalización *</label>
+                        <input type="date" id="editFechaFinalizacion" required>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Fecha límite de corrección:</strong> <span id="editFechaLimite"></span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEditarProyecto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">💾 Guardar y Regenerar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ver Reporte -->
+    <div id="modalVerReporte" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📄 Reporte de Constancia de Informe General</h3>
+                <button class="modal-close" onclick="cerrarModalReporte()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="reporteContent" class="reporte-documento">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalReporte()">Cerrar</button>
+                    <button type="button" class="btn-primary" onclick="imprimirReporte()">🖨️ Imprimir Reporte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Proyecto (Solo para investigadores) -->
+    <div id="modalEditarProyecto" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Editar Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModalEditarProyecto()">&times;</button>
+            </div>
+            <form id="formEditarProyecto" class="modal-body">
+                <input type="hidden" id="editProyectoId">
+
+                <div class="form-group">
+                    <label for="editTituloProyecto">Título del Proyecto *</label>
+                    <input type="text" id="editTituloProyecto" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescripcionProyecto">Descripción *</label>
+                    <textarea id="editDescripcionProyecto" required rows="4"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editObjetivoGeneral">Objetivo General *</label>
+                        <input type="text" id="editObjetivoGeneral" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMetodologia">Metodología *</label>
+                        <input type="text" id="editMetodologia" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editResultadosEsperados">Resultados Esperados *</label>
+                    <textarea id="editResultadosEsperados" required rows="3"></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Fecha límite de corrección:</strong> <span id="editFechaLimite"></span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEditarProyecto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+        <div class="form-group">
+            <label for="localizacion">Localización *</label>
+            <input type="text" id="localizacion" required placeholder="Lugar donde se realizará">
+        </div>
+    </div>
+
+    <!-- Fechas -->
+    <div class="form-row">
+        <div class="form-group">
+            <label for="fechaInicio">Fecha de Inicio *</label>
+            <input type="date" id="fechaInicio" required>
+        </div>
+        <div class="form-group">
+            <label for="fechaFinalizacion">Fecha de Finalización *</label>
+            <input type="date" id="fechaFinalizacion" required>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="cerrarModalNuevoProyecto()">Cancelar</button>
+        <button type="submit" class="btn-primary">📄 Crear Proyecto </button>
+    </div>
+    </form>
+    </div>
+    </div>
+
+    <!-- Modal Editar Proyecto -->
+    <div id="modalEditarProyecto" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>✏️ Editar Información del Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModalEditarProyecto()">&times;</button>
+            </div>
+            <form id="formEditarProyecto" class="modal-body">
+                <input type="hidden" id="editProyectoId">
+
+                <div class="alert alert-warning" style="margin-bottom: 20px;">
+                    <strong>⚠️ Atención:</strong> Al editar el proyecto, se regenerará el reporte automáticamente con
+                    los nuevos datos.
+                </div>
+
+                <!-- Título del Proyecto -->
+                <div class="form-group">
+                    <label for="editTituloProyecto">Título del Proyecto *</label>
+                    <input type="text" id="editTituloProyecto" required>
+                </div>
+
+                <!-- Tipo de Investigación y Programa de Estudio -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTipoInvestigacion">Tipo de Investigación *</label>
+                        <select id="editTipoInvestigacion" required>
+                            <option value="">Seleccione...</option>
+                            <option value="aplicada">Aplicada</option>
+                            <option value="innovacion">Innovación</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProgramaEstudio">Programa de Estudio *</label>
+                        <select id="editProgramaEstudio" required>
+                            <option value="">Seleccione...</option>
+                            <option value="asistencia-administrativa">Asistencia Administrativa</option>
+                            <option value="diseno-programacion-web">Diseño y Programación Web</option>
+                            <option value="electricidad-industrial">Electricidad Industrial</option>
+                            <option value="electronica-industrial">Electrónica industrial</option>
+                            <option value="mantenimiento-maquinaria-pesada">Mantenimiento de Maquinaria Pesada</option>
+                            <option value="mecatronica-automotriz">Mecatrónica automotriz</option>
+                            <option value="mecanica-produccion-industrial">Mecánica de producción industrial</option>
+                            <option value="metalurgia">Metalurgia</option>
+                            <option value="tecnologia-analisis-quimico">Tecnología de Análisis Químico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Línea de Investigación -->
+                <div class="form-group">
+                    <label for="editLineaInvestigacion">Línea de Investigación *</label>
+                    <select id="editLineaInvestigacion" required disabled>
+                        <option value="">Primero seleccione un Programa de Estudio</option>
+                    </select>
+                </div>
+
+                <!-- Integrantes -->
+                <div class="form-group">
+                    <label for="editIntegrantes">Integrante(s) del Proyecto *</label>
+                    <textarea id="editIntegrantes" required rows="3"></textarea>
+                </div>
+
+                <!-- Objetivo del Proyecto -->
+                <div class="form-group">
+                    <label for="editObjetivoProyecto">Objetivo del Proyecto *</label>
+                    <textarea id="editObjetivoProyecto" required rows="4"></textarea>
+                </div>
+
+                <!-- Beneficiarios y Localización -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editBeneficiarios">Beneficiarios *</label>
+                        <input type="text" id="editBeneficiarios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLocalizacion">Localización *</label>
+                        <input type="text" id="editLocalizacion" required>
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFechaInicio">Fecha de Inicio *</label>
+                        <input type="date" id="editFechaInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFechaFinalizacion">Fecha de Finalización *</label>
+                        <input type="date" id="editFechaFinalizacion" required>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Fecha límite de corrección:</strong> <span id="editFechaLimite"></span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEditarProyecto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">💾 Guardar y Regenerar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ver Reporte -->
+    <div id="modalVerReporte" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📄 Reporte de Constancia de Informe General</h3>
+                <button class="modal-close" onclick="cerrarModalReporte()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="reporteContent" class="reporte-documento">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalReporte()">Cerrar</button>
+                    <button type="button" class="btn-primary" onclick="imprimirReporte()">🖨️ Imprimir Reporte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Proyecto (Solo para investigadores) -->
+    <div id="modalEditarProyecto" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Editar Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModalEditarProyecto()">&times;</button>
+            </div>
+            <form id="formEditarProyecto" class="modal-body">
+                <input type="hidden" id="editProyectoId">
+
+                <div class="form-group">
+                    <label for="editTituloProyecto">Título del Proyecto *</label>
+                    <input type="text" id="editTituloProyecto" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescripcionProyecto">Descripción *</label>
+                    <textarea id="editDescripcionProyecto" required rows="4"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editObjetivoGeneral">Objetivo General *</label>
+                        <input type="text" id="editObjetivoGeneral" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMetodologia">Metodología *</label>
+                        <input type="text" id="editMetodologia" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editResultadosEsperados">Resultados Esperados *</label>
+                    <textarea id="editResultadosEsperados" required rows="3"></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Fecha límite de corrección:</strong> <span id="editFechaLimite"></span>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEditarProyecto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <script src="js/main.js"></script>
+    <script src="js/investigador.js"></script>
+    <script src="js/evaluador.js"></script>
+    <script>
+        // Mapeo de Programas de Estudio a Líneas de Investigación
+        const programasLineas = {
+            'asistencia-administrativa': [
+                { value: 'gestion-documentaria', text: 'Gestión documentaria' },
+                { value: 'gestion-recursos-humanos-financieros', text: 'Gestión de recursos humanos y financieros' },
+                { value: 'gestion-eventos-protocolares', text: 'Gestión de eventos y actividades protocolares' }
+            ],
+            'diseno-programacion-web': [
+                { value: 'diseno-web-multimedia', text: 'Diseño web y aplicaciones multimedia' },
+                { value: 'aplicaciones-web', text: 'Aplicaciones web' },
+                { value: 'integracion-aplicaciones-web-moviles', text: 'Integración de aplicaciones web y móviles' }
+            ],
+            'electricidad-industrial': [
+                { value: 'instalacion-mantenimiento-sistemas-electricos', text: 'Instalación y mantenimiento de sistemas eléctricos' },
+                { value: 'suministro-mantenimiento-electrico-edificaciones', text: 'Suministro y mantenimiento eléctrico de edificaciones y máquinas eléctricas' },
+                { value: 'automatizacion-control-sistemas-electricos', text: 'Automatización y control de sistemas y equipos eléctricos' }
+            ],
+            'electronica-industrial': [
+                { value: 'instalacion-mantenimiento-sistemas-electricos-electronicos', text: 'Instalación y mantenimiento de sistemas eléctricos y electrónicos' },
+                { value: 'diseno-operacion-sistemas-electricos-electronicos', text: 'Diseño y operación de sistemas eléctricos y electrónicos' },
+                { value: 'sistemas-automatizacion-potencia', text: 'Sistemas de automatización y potencia' },
+                { value: 'sistemas-control-procesos-redes-comunicaciones', text: 'Sistemas de control de procesos, redes y comunicaciones industriales' }
+            ],
+            'mantenimiento-maquinaria-pesada': [
+                { value: 'mecanica-banco-instalaciones-electricas', text: 'Mecánica de Banco e Instalaciones Eléctricas Básicas' },
+                { value: 'mantenimiento-motores-combustion-interna', text: 'Mantenimiento de Motores de Combustión Interna' },
+                { value: 'mantenimiento-sistemas-hidraulicos-frenos-direccion', text: 'Mantenimiento de Sistemas Hidráulicos, Frenos, Dirección, Suspensión y Transmisión de Maquinaria Pesada' }
+            ],
+            'mecatronica-automotriz': [
+                { value: 'mantenimiento-suspension-direccion-frenos-electronica', text: 'Mantenimiento de los sistemas de suspensión, dirección y frenos automotrices con asistencia electrónica' },
+                { value: 'mantenimiento-sistemas-electricos-electronicos-automotrices', text: 'Mantenimiento de los sistemas eléctricos y electrónicos automotrices' },
+                { value: 'mantenimiento-transmision-asistencia-electronica', text: 'Mantenimiento de los sistemas de transmisión con asistencia electrónica' }
+            ],
+            'mecanica-produccion-industrial': [
+                { value: 'diseno-tecnologia-soldadura', text: 'Diseño y tecnología de la soldadura' },
+                { value: 'proceso-mecanizado-piezas-matriceria', text: 'Proceso de mecanizado de piezas y matricería' },
+                { value: 'fabricacion-automatizacion-industrial', text: 'Fabricación y automatización industrial' }
+            ],
+            'metalurgia': [
+                { value: 'tecnicas-conminacion-minerales', text: 'Técnicas de Conminación en Minerales' },
+                { value: 'procesamiento-minerales', text: 'Procesamiento de Minerales' },
+                { value: 'control-calidad-procesos-metalurgicos', text: 'Control de Calidad en Procesos Metalúrgicos' }
+            ],
+            'tecnologia-analisis-quimico': [
+                { value: 'preparacion-muestras-quimicas', text: 'Técnico en Preparación de Muestras Químicas' },
+                { value: 'ensayos-fisico-quimicos', text: 'Técnico en Ensayos Físico-Químicos' },
+                { value: 'analisis-instrumental', text: 'Técnico en Análisis Instrumental' }
+            ]
+        };
+
+        // Función para actualizar las líneas de investigación según el programa seleccionado
+        function actualizarLineasInvestigacion(programaSelectId, lineaSelectId) {
+            const programaSelect = document.getElementById(programaSelectId);
+            const lineaSelect = document.getElementById(lineaSelectId);
+
+            const programaValue = programaSelect.value;
+
+            // Limpiar opciones actuales
+            lineaSelect.innerHTML = '<option value="">Seleccione una línea de investigación</option>';
+
+            if (programaValue && programasLineas[programaValue]) {
+                // Habilitar el select y agregar las opciones correspondientes
+                lineaSelect.disabled = false;
+
+                programasLineas[programaValue].forEach(linea => {
+                    const option = document.createElement('option');
+                    option.value = linea.value;
+                    option.textContent = linea.text;
+                    lineaSelect.appendChild(option);
+                });
+            } else {
+                // Deshabilitar el select si no hay programa seleccionado
+                lineaSelect.disabled = true;
+                lineaSelect.innerHTML = '<option value="">Primero seleccione un Programa de Estudio</option>';
+            }
+        }
+
+        // Cargar proyectos de la categoría al cargar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarProyectosCategoria();
+
+            // Agregar event listeners para la cascada en el formulario de nuevo proyecto
+            const programaEstudio = document.getElementById('programaEstudio');
+            if (programaEstudio) {
+                programaEstudio.addEventListener('change', function () {
+                    actualizarLineasInvestigacion('programaEstudio', 'lineaInvestigacion');
+                });
+            }
+
+            // Agregar event listeners para la cascada en el formulario de edición
+            const editProgramaEstudio = document.getElementById('editProgramaEstudio');
+            if (editProgramaEstudio) {
+                editProgramaEstudio.addEventListener('change', function () {
+                    actualizarLineasInvestigacion('editProgramaEstudio', 'editLineaInvestigacion');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

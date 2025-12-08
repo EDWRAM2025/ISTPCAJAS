@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Investigador</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <img src="imagen/logocajas.png" alt="Logo Instituto Cajas" class="logo-sidebar">
+                </div>
+                <h3>IESTP "AACD"</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard-investigador.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" onclick="verMisProyectos(event)">
+                    <span class="nav-icon">📁</span>
+                    <span>Mis Proyectos</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Documentos</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span id="userInitials">IN</span>
+                    </div>
+                    <div class="user-details">
+                        <p class="user-name" id="userName">Investigador</p>
+                        <p class="user-role">Investigador</p>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <span>🚪</span> Salir
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Dashboard</h1>
+                <div class="top-bar-actions">
+                    <button class="btn-notification">
+                        <span class="notification-badge">3</span>
+                        🔔
+                    </button>
+                    <div class="user-menu">
+                        <span id="userNameTop">Investigador</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="page-header">
+                    <h2>Selecciona una Categoría</h2>
+                    <p>Elige la categoría del proyecto que deseas gestionar</p>
+                </div>
+
+                <div class="categories-grid">
+                    <!-- Categoría 1: Investigación Aplicada -->
+                    <div class="category-card" onclick="abrirCategoria('investigacion-aplicada')">
+                        <div class="category-icon"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                        <div class="category-content">
+                            <h3>Investigación Aplicada</h3>
+                            <p>Proyectos de investigación aplicada</p>
+                            <div class="category-stats">
+                                <span class="stat-item">
+                                    <strong id="count-investigacion-aplicada">0</strong> Proyectos
+                                </span>
+                            </div>
+                        </div>
+                        <div class="category-arrow">→</div>
+                    </div>
+
+                    <!-- Categoría 2: Innovación Tecnológica -->
+                    <div class="category-card" onclick="abrirCategoria('innovacion-tecnologica')">
+                        <div class="category-icon"
+                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                </path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="category-content">
+                            <h3>Innovación Tecnológica</h3>
+                            <p>Proyectos de desarrollo e innovación tecnológica</p>
+                            <div class="category-stats">
+                                <span class="stat-item">
+                                    <strong id="count-innovacion-tecnologica">0</strong> Proyectos
+                                </span>
+                            </div>
+                        </div>
+                        <div class="category-arrow">→</div>
+                    </div>
+
+                    <!-- Categoría 3: Innovación Pedagógica - Institucional -->
+                    <div class="category-card" onclick="abrirCategoria('innovacion-pedagogica')">
+                        <div class="category-icon"
+                            style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                            </svg>
+                        </div>
+                        <div class="category-content">
+                            <h3>Innovación Pedagógica</h3>
+                            <p>Proyectos de innovación pedagógica</p>
+                            <div class="category-stats">
+                                <span class="stat-item">
+                                    <strong id="count-innovacion-pedagogica">0</strong> Proyectos
+                                </span>
+                            </div>
+                        </div>
+                        <div class="category-arrow">→</div>
+                    </div>
+                </div>
+
+                <!-- Sección de resumen -->
+                <div class="summary-section">
+                    <h3>Resumen de Actividad</h3>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #4CAF50;">📊</div>
+                            <div class="summary-info">
+                                <h4 id="totalProyectos">0</h4>
+                                <p>Total Proyectos</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #FF9800;">⏳</div>
+                            <div class="summary-info">
+                                <h4 id="proyectosPendientes">0</h4>
+                                <p>En Revisión</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #2196F3;">✓</div>
+                            <div class="summary-info">
+                                <h4 id="proyectosAprobados">0</h4>
+                                <p>Aprobados</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #f44336;">✗</div>
+                            <div class="summary-info">
+                                <h4 id="proyectosRechazados">0</h4>
+                                <p>Rechazados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/investigador.js"></script>
+</body>
+
+</html>

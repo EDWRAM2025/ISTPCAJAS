@@ -1,0 +1,31 @@
+# Scripts de desarrollo y arreglos temporales
+*.ps1
+*.py
+fix_*.js
+agregar_*.ps1
+
+# Backups
+*_backup.*
+*.bak
+
+# Archivos temporales
+.temp
+*.tmp
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (si se usa en el futuro)
+node_modules/
+package-lock.json
+
+# Archivos de Excel temporales
+~$*.xlsx

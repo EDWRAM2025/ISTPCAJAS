@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluar Proyecto</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <img src="imagen/logocajas.png" alt="Logo Instituto Cajas" class="logo-sidebar">
+                </div>
+                <h3>Instituto</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard-evaluador.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📋</span>
+                    <span>Evaluación</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span id="userInitials">EV</span>
+                    </div>
+                    <div class="user-details">
+                        <p class="user-name" id="userName">Evaluador</p>
+                        <p class="user-role">Evaluador</p>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <span>🚪</span> Salir
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div>
+                    <button class="btn-back" onclick="volverCategoriaEvaluador()">← Volver</button>
+                    <h1>Evaluar Proyecto</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="evaluation-container">
+                    <div class="project-info-card">
+                        <h2 id="proyectoTitulo">Título del Proyecto</h2>
+                        <div class="project-meta">
+                            <span><strong>Investigador:</strong> <span id="proyectoInvestigador"></span></span>
+                            <span><strong>Fecha de envío:</strong> <span id="proyectoFecha"></span></span>
+                            <span><strong>Categoría:</strong> <span id="proyectoCategoria"></span></span>
+                            <span><strong>Paso a evaluar:</strong> <span id="proyectoPaso"
+                                    style="color: #667eea; font-weight: bold;"></span></span>
+                        </div>
+                    </div>
+
+                    <form id="formEvaluacion" class="evaluation-form">
+                        <input type="hidden" id="proyectoId">
+                        <input type="hidden" id="pasoAEvaluar">
+
+                        <h3 id="tituloEvaluacion">Criterios de Evaluación</h3>
+
+                        <div class="evaluation-section" id="criteriosEvaluacion">
+                            <!-- Se llenará dinámicamente según el paso -->
+                        </div>
+
+                        <div class="evaluation-summary">
+                            <div class="score-display">
+                                <h3>Puntuación Total</h3>
+                                <div class="score-value">
+                                    <span id="puntuacionTotal">0</span> / <span id="puntuacionMaxima">100</span>
+                                </div>
+                                <div class="score-status" id="estadoEvaluacion">
+                                    Selecciona los criterios cumplidos
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="fechaLimiteSection" class="form-group" style="display: none;">
+                            <label for="fechaLimiteCorreccion">
+                                <span style="color: #f44336;">*</span> Fecha límite para corrección
+                            </label>
+                            <input type="date" id="fechaLimiteCorreccion">
+                            <small style="color: #718096;">
+                                ⚠️ El investigador deberá corregir y reenviar el proyecto antes de esta fecha
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="comentariosEvaluador">Comentarios y Observaciones</label>
+                            <textarea id="comentariosEvaluador" rows="4"
+                                placeholder="Ingrese sus observaciones sobre el proyecto..."></textarea>
+                            <small style="color: #718096;">
+                                💡 Los comentarios ayudarán al investigador a mejorar su proyecto
+                            </small>
+                        </div>
+
+                        <div class="evaluation-actions">
+                            <button type="button" class="btn-secondary"
+                                onclick="volverCategoriaEvaluador()">Cancelar</button>
+                            <button type="submit" class="btn-primary" id="btnEnviarEvaluacion">Enviar
+                                Evaluación</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/evaluador.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', cargarProyectoParaEvaluar);
+    </script>
+</body>
+
+</html>
