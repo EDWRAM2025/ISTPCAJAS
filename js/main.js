@@ -75,22 +75,34 @@ function initDemoData() {
     }
 }
 
-// Obtener usuario actual
-function getCurrentUser() {
-    return StorageManager.getItem('currentUser');
-}
-
-// Cerrar sesión
-function logout() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        StorageManager.removeItem('currentUser');
-        window.location.href = 'index.html';
+// Obtener usuario actual (ahora asíncrono con Supabase)
+async function getCurrentUser() {
+    try {
+        const userData = await SupabaseManager.getCurrentUser();
+        return userData;
+    } catch (error) {
+        console.error('Error al obtener usuario actual:', error);
+        return null;
     }
 }
 
-// Verificar autenticación
-function checkAuth() {
-    const currentUser = getCurrentUser();
+// Cerrar sesión con Supabase
+async function logout() {
+    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+        try {
+            await SupabaseManager.logout();
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            // Forzar redirección incluso si hay error
+            window.location.href = 'index.html';
+        }
+    }
+}
+
+// Verificar autenticación (ahora asíncrono)
+async function checkAuth() {
+    const currentUser = await getCurrentUser();
     if (!currentUser) {
         window.location.href = 'index.html';
         return false;
@@ -195,9 +207,9 @@ function getRolBadge(rol) {
     return badges[rol] || `<span class="badge">${rol}</span>`;
 }
 
-// Actualizar interfaz con datos del usuario actual
-function updateUserInfo() {
-    const user = getCurrentUser();
+// Actualizar interfaz con datos del usuario actual (ahora asíncrono)
+async function updateUserInfo() {
+    const user = await getCurrentUser();
     if (!user) return;
 
     const userNameElements = document.querySelectorAll('#userName, #userNameTop');
@@ -209,6 +221,14 @@ function updateUserInfo() {
     const initialsEl = document.getElementById('userInitials');
     if (initialsEl) initialsEl.textContent = user.nombre.charAt(0) + user.apellido.charAt(0);
 }
+
+// Inicializar cuando carga la página
+document.addEventListener('DOMContentLoaded', async function () {
+    initDemoData();
+    if (window.location.pathname.includes('dashboard')) {
+        await updateUserInfo(); // Esperar a que se cargue el usuario
+    }
+});
 
 // Calcular días restantes
 function getDaysRemaining(dateString) {

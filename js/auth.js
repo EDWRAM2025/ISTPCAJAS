@@ -1,5 +1,5 @@
 /* ====================================
-   AUTH.JS - Autenticación
+   AUTH.JS - Autenticación con Supabase
    ==================================== */
 
 // Manejar el formulario de login
@@ -42,17 +42,25 @@ document.addEventListener('DOMContentLoaded', function () {
     checkExistingSession();
 });
 
-// Verificar sesión existente
-function checkExistingSession() {
-    const currentUser = StorageManager.getItem('currentUser');
+// Verificar sesión existente con Supabase
+async function checkExistingSession() {
+    try {
+        const session = await SupabaseManager.getSession();
 
-    if (currentUser && window.location.pathname.includes('index.html')) {
-        redirectToDashboard(currentUser.rol);
+        if (session && window.location.pathname.includes('index.html')) {
+            // Obtener datos del usuario desde la tabla usuarios
+            const userData = await SupabaseManager.getCurrentUser();
+            if (userData) {
+                redirectToDashboard(userData.rol);
+            }
+        }
+    } catch (error) {
+        console.error('Error al verificar sesión:', error);
     }
 }
 
-// Manejar inicio de sesión
-function handleLogin(e) {
+// Manejar inicio de sesión con Supabase
+async function handleLogin(e) {
     e.preventDefault();
 
     const email = document.getElementById('email').value.trim();
@@ -77,36 +85,45 @@ function handleLogin(e) {
         return;
     }
 
-    // Obtener usuarios
-    const usuarios = StorageManager.getItem('usuarios') || [];
+    // Mostrar loading
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Iniciando sesión...';
+    submitButton.disabled = true;
 
-    // Buscar usuario
-    const user = usuarios.find(u => u.email === email && u.password === password);
+    try {
+        // Intentar login con Supabase
+        const result = await SupabaseManager.login(email, password);
 
-    if (user) {
+        if (result.error) {
+            throw new Error(result.error);
+        }
+
         // Login exitoso
-        const userData = {
-            id: user.id,
-            nombre: user.nombre,
-            apellido: user.apellido,
-            email: user.email,
-            rol: user.rol
-        };
+        const userData = result.userData;
 
-        StorageManager.setItem('currentUser', userData);
-
+        // Guardar en localStorage para compatibilidad (opcional)
         if (remember) {
-            StorageManager.setItem('rememberUser', true);
+            localStorage.setItem('rememberUser', 'true');
         }
 
         showNotification('¡Bienvenido! Iniciando sesión...', 'success');
 
         // Redireccionar después de un breve delay
         setTimeout(() => {
-            redirectToDashboard(user.rol);
+            redirectToDashboard(userData.rol);
         }, 1000);
-    } else {
-        showError('Correo o contraseña incorrectos');
+
+    } catch (error) {
+        console.error('Error en login:', error);
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+
+        if (error.message.includes('Invalid login credentials')) {
+            showError('Correo o contraseña incorrectos');
+        } else {
+            showError('Error al iniciar sesión. Intenta nuevamente.');
+        }
     }
 }
 
@@ -143,3 +160,4 @@ function redirectToDashboard(rol) {
 // Exportar funciones
 window.handleLogin = handleLogin;
 window.redirectToDashboard = redirectToDashboard;
+window.checkExistingSession = checkExistingSession;
