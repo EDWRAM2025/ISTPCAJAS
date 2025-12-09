@@ -1,13 +1,22 @@
 -- =============================================
--- ISTPCAJAS - Supabase Database Schema
+-- ISTPCAJAS - Script Completo de Inicialización
+-- PROYECTO NUEVO: cymcihznzdbrqfogrlwr
+-- =============================================
+
+-- Este script debe ejecutarse en este orden en el SQL Editor de Supabase
+
+-- =============================================
+-- PARTE 1: EXTENSIONES
 -- =============================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- =============================================
--- TABLA: usuarios
+-- PARTE 2: CREAR TABLAS
 -- =============================================
+
+-- TABLA: usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     nombre TEXT NOT NULL,
@@ -19,13 +28,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     auth_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
--- Índice para búsquedas rápidas por email
+-- Índices para usuarios
 CREATE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios(email);
 CREATE INDEX IF NOT EXISTS idx_usuarios_rol ON usuarios(rol);
+CREATE INDEX IF NOT EXISTS idx_usuarios_auth_user_id ON usuarios(auth_user_id);
 
--- =============================================
 -- TABLA: proyectos
--- =============================================
 CREATE TABLE IF NOT EXISTS proyectos (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     titulo TEXT NOT NULL,
@@ -40,14 +48,12 @@ CREATE TABLE IF NOT EXISTS proyectos (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Índices para búsquedas rápidas
+-- Índices para proyectos
 CREATE INDEX IF NOT EXISTS idx_proyectos_investigador ON proyectos(investigador_id);
 CREATE INDEX IF NOT EXISTS idx_proyectos_estado ON proyectos(estado);
 CREATE INDEX IF NOT EXISTS idx_proyectos_categoria ON proyectos(categoria);
 
--- =============================================
 -- TABLA: evaluaciones
--- =============================================
 CREATE TABLE IF NOT EXISTS evaluaciones (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     proyecto_id UUID NOT NULL REFERENCES proyectos(id) ON DELETE CASCADE,
@@ -57,14 +63,11 @@ CREATE TABLE IF NOT EXISTS evaluaciones (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Índices
+-- Índices para evaluaciones
 CREATE INDEX IF NOT EXISTS idx_evaluaciones_proyecto ON evaluaciones(proyecto_id);
 CREATE INDEX IF NOT EXISTS idx_evaluaciones_evaluador ON evaluaciones(evaluador_id);
 
--- =============================================
 -- TABLA: configuracion
--- Para almacenar fechas límite y otras configs
--- =============================================
 CREATE TABLE IF NOT EXISTS configuracion (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     clave TEXT UNIQUE NOT NULL,
@@ -85,8 +88,10 @@ VALUES ('fechas_limite', '{
 ON CONFLICT (clave) DO NOTHING;
 
 -- =============================================
--- FUNCIÓN: Actualizar updated_at automáticamente
+-- PARTE 3: TRIGGERS
 -- =============================================
+
+-- Función para actualizar updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -96,17 +101,20 @@ END;
 $$ language 'plpgsql';
 
 -- Triggers para actualizar updated_at
+DROP TRIGGER IF EXISTS update_usuarios_updated_at ON usuarios;
 CREATE TRIGGER update_usuarios_updated_at BEFORE UPDATE ON usuarios
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_proyectos_updated_at ON proyectos;
 CREATE TRIGGER update_proyectos_updated_at BEFORE UPDATE ON proyectos
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_configuracion_updated_at ON configuracion;
 CREATE TRIGGER update_configuracion_updated_at BEFORE UPDATE ON configuracion
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- =============================================
--- ROW LEVEL SECURITY (RLS)
+-- PARTE 4: ROW LEVEL SECURITY (RLS)
 -- =============================================
 
 -- Habilitar RLS en todas las tablas
@@ -119,44 +127,55 @@ ALTER TABLE configuracion ENABLE ROW LEVEL SECURITY;
 -- POLÍTICAS RLS - usuarios
 -- =============================================
 
+-- Eliminar políticas existentes si existen
+DROP POLICY IF EXISTS "Usuarios pueden ver su propio perfil" ON usuarios;
+DROP POLICY IF EXISTS "Administradores pueden ver todos los usuarios" ON usuarios;
+DROP POLICY IF EXISTS "Administradores pueden insertar usuarios" ON usuarios;
+DROP POLICY IF EXISTS "Administradores pueden actualizar usuarios" ON usuarios;
+DROP POLICY IF EXISTS "Administradores pueden eliminar usuarios" ON usuarios;
+
 -- Los usuarios pueden ver su propio perfil
 CREATE POLICY "Usuarios pueden ver su propio perfil"
     ON usuarios FOR SELECT
     USING (auth.uid() = auth_user_id);
 
 -- Los administradores pueden ver todos los usuarios
--- SOLUCIÓN: Usar auth.jwt() en lugar de consultar la tabla usuarios
 CREATE POLICY "Administradores pueden ver todos los usuarios"
     ON usuarios FOR SELECT
     USING (
-        (auth.jwt() -> 'user_metadata' ->> 'rol') = 'administrador'
+        (auth.jwt() -> 'user_metadata' ->>> 'rol') = 'administrador'
     );
 
 -- Los administradores pueden insertar usuarios
 CREATE POLICY "Administradores pueden insertar usuarios"
     ON usuarios FOR INSERT
     WITH CHECK (
-        (auth.jwt() -> 'user_metadata' ->> 'rol') = 'administrador'
+        (auth.jwt() -> 'user_metadata' ->>> 'rol') = 'administrador'
     );
 
 -- Los administradores pueden actualizar usuarios
 CREATE POLICY "Administradores pueden actualizar usuarios"
     ON usuarios FOR UPDATE
     USING (
-        (auth.jwt() -> 'user_metadata' ->> 'rol') = 'administrador'
+        (auth.jwt() -> 'user_metadata' ->>> 'rol') = 'administrador'
     );
 
--- Los administradores pueden eliminar usuarios (excepto a sí mismos)
+-- Los administradores pueden eliminar usuarios
 CREATE POLICY "Administradores pueden eliminar usuarios"
     ON usuarios FOR DELETE
     USING (
         auth.uid() != auth_user_id
-        AND (auth.jwt() -> 'user_metadata' ->> 'rol') = 'administrador'
+        AND (auth.jwt() -> 'user_metadata' ->>> 'rol') = 'administrador'
     );
 
 -- =============================================
 -- POLÍTICAS RLS - proyectos
 -- =============================================
+
+DROP POLICY IF EXISTS "Usuarios autenticados pueden ver proyectos" ON proyectos;
+DROP POLICY IF EXISTS "Investigadores pueden crear proyectos" ON proyectos;
+DROP POLICY IF EXISTS "Investigadores pueden actualizar sus proyectos" ON proyectos;
+DROP POLICY IF EXISTS "Administradores pueden actualizar proyectos" ON proyectos;
 
 -- Todos los usuarios autenticados pueden ver proyectos
 CREATE POLICY "Usuarios autenticados pueden ver proyectos"
@@ -202,6 +221,10 @@ CREATE POLICY "Administradores pueden actualizar proyectos"
 -- POLÍTICAS RLS - evaluaciones
 -- =============================================
 
+DROP POLICY IF EXISTS "Usuarios autenticados pueden ver evaluaciones" ON evaluaciones;
+DROP POLICY IF EXISTS "Evaluadores pueden crear evaluaciones" ON evaluaciones;
+DROP POLICY IF EXISTS "Evaluadores pueden actualizar sus evaluaciones" ON evaluaciones;
+
 -- Todos los usuarios autenticados pueden ver evaluaciones
 CREATE POLICY "Usuarios autenticados pueden ver evaluaciones"
     ON evaluaciones FOR SELECT
@@ -235,6 +258,9 @@ CREATE POLICY "Evaluadores pueden actualizar sus evaluaciones"
 -- POLÍTICAS RLS - configuracion
 -- =============================================
 
+DROP POLICY IF EXISTS "Usuarios pueden leer configuración" ON configuracion;
+DROP POLICY IF EXISTS "Administradores pueden modificar configuración" ON configuracion;
+
 -- Todos los usuarios autenticados pueden leer configuración
 CREATE POLICY "Usuarios pueden leer configuración"
     ON configuracion FOR SELECT
@@ -252,7 +278,7 @@ CREATE POLICY "Administradores pueden modificar configuración"
     );
 
 -- =============================================
--- VISTAS ÚTILES
+-- PARTE 5: VISTAS
 -- =============================================
 
 -- Vista de proyectos con información del investigador
@@ -290,9 +316,6 @@ FROM evaluaciones e
 JOIN usuarios u ON e.evaluador_id = u.id;
 
 -- =============================================
--- COMENTARIOS
+-- CONFIRMACIÓN
 -- =============================================
-COMMENT ON TABLE usuarios IS 'Tabla de usuarios del sistema ISTPCAJAS';
-COMMENT ON TABLE proyectos IS 'Proyectos de investigación';
-COMMENT ON TABLE evaluaciones IS 'Evaluaciones de proyectos';
-COMMENT ON TABLE configuracion IS 'Configuración del sistema (fechas límite, etc.)';
+SELECT 'Base de datos inicializada correctamente' as status;
