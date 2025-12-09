@@ -2,11 +2,11 @@
    SUPABASE-CONFIG.JS - Configuración Supabase
    ==================================== */
 
-// IMPORTANTE: Reemplaza YOUR_ANON_KEY_HERE con tu clave real
-// La encontrarás en: Supabase Dashboard → Settings → API → anon public
+// PROYECTO: ISTPCAJAS (cymcihznzdbrqfogrlwr)
+// Configuración actualizada: 2025-12-09
 
-const SUPABASE_URL = 'https://wbondpjuxlcxkkkdbzkj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib25kcGp1eGxjeGtra2RiemtqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNDY0MjcsImV4cCI6MjA4MDcyMjQyN30.Jlc7tEZFsyIqt7lEas3_tVE2-sksir0Pbhm4ZzHB15M';
+const SUPABASE_URL = 'https://cymcihznzdbrqfogrlwr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWNpaHpuemRicnFmb2dybHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDY2MjIsImV4cCI6MjA4MDc4MjYyMn0.K-5INbUCSoI_mxtjfeOnMNQXkJkNM0g28YwH3VRBuMY';
 
 // Inicializar cliente de Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
