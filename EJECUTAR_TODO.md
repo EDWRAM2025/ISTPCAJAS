@@ -140,5 +140,5 @@ Si no sale nada, repite PASO 1.
 ## 📌 DATOS DE LOGIN
 
 **Email**: `admin` (se autocompletará a admin@institutocajas.edu.pe)
-**Password**: `Admin@Cajas2025`  
+**Password**: `` Admin@Cajas2025 
 **Email Real (Gmail vinculado)**: cordedwinegsep@gmail.com

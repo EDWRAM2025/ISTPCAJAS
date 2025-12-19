@@ -9,7 +9,11 @@ const SUPABASE_URL = 'https://cymcihznzdbrqfogrlwr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWNpaHpuemRicnFmb2dybHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDY2MjIsImV4cCI6MjA4MDc4MjYyMn0.K-5INbUCSoI_mxtjfeOnMNQXkJkNM0g28YwH3VRBuMY';
 
 // Inicializar cliente de Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Guardar referencia a la librería
+const supabaseLib = window.supabase;
+
+// Crear cliente de Supabase
+const supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =============================================
 // SUPABASE MANAGER - Reemplazo de StorageManager
@@ -448,3 +452,5 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 console.log('✅ Supabase configurado correctamente');
+
+
