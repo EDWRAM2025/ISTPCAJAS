@@ -1,4 +1,4 @@
-/* ====================================
+ï»¿/* ====================================
    VARIABLES Y RESET
    ==================================== */
 :root {
@@ -1581,6 +1581,11 @@ body {
     animation: logoSpin 8s linear infinite !important;
 }
 
+/* Login page logo rotation */
+.logo-circle img.logo-login {
+    animation: logoSpin 8s linear infinite;
+}
+
 @keyframes logoSpin {
     from {
         transform: rotate(0deg);
@@ -1671,7 +1676,7 @@ body {
    RESPONSIVE MODAL STYLES
    ==================================== */
 
-/* Modal Pequeño - max-width más pequeño */
+/* Modal Pequeï¿½o - max-width mï¿½s pequeï¿½o */
 .modal-small {
     max-width: 500px !important;
 }
