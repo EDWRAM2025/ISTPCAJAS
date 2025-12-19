@@ -23,24 +23,46 @@ Este documento registra todos los usuarios creados en **Supabase Authentication*
 |-------|-----------|------|--------|
 | <evaluador@institutocajas.edu.pe> | Evalua@2025 | evaluador | ✅ Confirmado |
 
-### 3. Investigadores (14 usuarios)
+### 3. Investigadores
 
-| # | Email | Contraseña | Rol | Estado |
-|---|-------|-----------|------|--------|
-| 1 | <investigador@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 2 | <pcajusolis@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 3 | <mfigueroacb@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 4 | <dvargasr@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 5 | <eacturizcetam@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 6 | <dbegazoa@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 7 | <mrojass@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 8 | <rarevalom@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 9 | <oporras@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 10 | <lbaldeonb@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 11 | <kmateoc@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 12 | <lponcem@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 13 | <jricaldio@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
-| 14 | <rmachad@institutocajas.edu.pe> | Invest@2025 | investigador | ✅ Confirmado |
+> [!WARNING]
+> **PROBLEMA IDENTIFICADO**: Se crearon 7 investigadores incorrectos. Ver `INSTRUCCIONES_CREAR_INVESTIGADORES.md` para corregir.
+
+#### ✅ Investigadores Existentes (9 usuarios)
+
+| # | Email | Contraseña | Estado |
+|---|-------|-----------|--------|
+| 1 | <investigador@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 2 | <oporras@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 3 | <lbaldeonb@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 4 | <kmateoc@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 5 | <lponcem@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 6 | <jricaldio@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 7 | <rmachad@institutocajas.edu.pe> | Invest@2025 | ✅ Confirmado |
+| 8 | <ccarhuachir@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+| 9 | <fruizy@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+
+#### ❌ Investigadores FALTANTES (7 usuarios) - DEBEN CREARSE
+
+| # | Email | Contraseña | Estado |
+|---|-------|-----------|--------|
+| 1 | <pcajusolis@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 2 | <mfigueroacb@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 3 | <dvargasr@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 4 | <eacturizcetam@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 5 | <dbegazoa@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 6 | <mrojass@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+| 7 | <rarevalom@institutocajas.edu.pe> | Invest@2025 | ❌ NO EXISTE |
+
+#### ⚠️ Investigadores INCORRECTOS (5 usuarios) - Opcionales para eliminar
+
+| # | Email | Contraseña | Estado |
+|---|-------|-----------|--------|
+| 1 | <jmerlog@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+| 2 | <lcardenasp@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+| 3 | <lpuentey@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+| 4 | <lrodrigom@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
+| 5 | <rsandovall@institutocajas.edu.pe> | Invest@2025 | ⚠️ Usuario Incorrecto |
 
 ---
 
