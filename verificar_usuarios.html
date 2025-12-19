@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Usuarios - Supabase</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            minheight: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-ok {
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .status-error {
+            color: #f56565;
+            font-weight: bold;
+        }
+
+        .log {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+
+        .log-success {
+            color: #48bb78;
+        }
+
+        .log-error {
+            color: #f56565;
+        }
+
+        .log-warning {
+            color: #ed8936;
+        }
+
+        .log-info {
+            color: #4299e1;
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .user-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .user-card h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+
+        .user-card .field {
+            margin: 10px 0;
+        }
+
+        .user-card .label {
+            font-weight: 600;
+            color: #4a5568;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .user-card .value {
+            color: #2d3748;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 Verificador de Usuarios - Supabase</h1>
+        <p class="subtitle">Sistema de Gestión de Investigación - IESTP AACD</p>
+
+        <div class="section">
+            <h2>1️⃣ Verificar Usuarios Existentes</h2>
+            <p>Verifica qué usuarios existen en Authentication y en la tabla usuarios.</p>
+            <button class="btn btn-primary" onclick="verificarUsuarios()">🔎 Verificar Usuarios</button>
+        </div>
+
+        <div class="section">
+            <h2>2️⃣ Probar Login de Usuarios</h2>
+            <p>Prueba el login de cada usuario para verificar credenciales:</p>
+            <button class="btn btn-success" onclick="probarLogin('admin@institutocajas.edu.pe', 'Admin@Cajas2025')">
+                👤 Login Administrador
+            </button>
+            <button class="btn btn-success" onclick="probarLogin('investigador@institutocajas.edu.pe', 'Invest@2025')">
+                👤 Login Investigador
+            </button>
+            <button class="btn btn-success" onclick="probarLogin('evaluador@institutocajas.edu.pe', 'Evalua@2025')">
+                👤 Login Evaluador
+            </button>
+        </div>
+
+        <div id="results"></div>
+        <div id="logs" class="log" style="display:none;"></div>
+    </div>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+
+    <script>
+        const logsDiv = document.getElementById('logs');
+        const resultsDiv = document.getElementById('results');
+
+        function log(message, type = 'info') {
+            logsDiv.style.display = 'block';
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(`[${type}]`, message);
+        }
+
+        async function verificarUsuarios() {
+            resultsDiv.innerHTML = '<p><em>Cargando...</em></p>';
+            log('Iniciando verificación de usuarios...', 'info');
+
+            try {
+                // Verificar usuarios en auth.users
+                log('Consultando auth.users...', 'info');
+                const authQuery = `
+                    SELECT 
+                        id as auth_user_id,
+                        email,
+                        email_confirmed_at,
+                        raw_user_meta_data->>'rol' as rol_metadata,
+                        raw_user_meta_data->>'nombre' as nombre_metadata,
+                        raw_user_meta_data->>'apellido' as apellido_metadata
+                    FROM auth.users
+                    ORDER BY created_at DESC
+                `;
+
+                const { data: authUsers, error: authError } = await supabase.rpc('exec_sql', { sql: authQuery })
+                    .catch(async () => {
+                        // Si RPC no está disponible, usar una query directa (esto no funcionará con RLS)
+                        log('RPC no disponible, usando consulta directamente...', 'warning');
+                        return await supabase.from('usuarios').select('*');
+                    });
+
+                // Verificar usuarios en tabla usuarios
+                log('Consultando tabla usuarios...', 'info');
+                const { data: dbUsers, error: dbError } = await supabase
+                    .from('usuarios')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (dbError) {
+                    log(`Error al consultar tabla usuarios: ${dbError.message}`, 'error');
+                    throw dbError;
+                }
+
+                log(`✅ Encontrados ${dbUsers.length} usuarios en tabla usuarios`, 'success');
+
+                // Mostrar resultados
+                let html = '<h3>📊 Resultados de la Verificación</h3>';
+
+                // Tabla de usuarios
+                html += '<h4>Usuarios en Tabla USUARIOS:</h4>';
+                if (dbUsers.length > 0) {
+                    html += '<table><thead><tr>';
+                    html += '<th>Email</th><th>Nombre</th><th>Apellido</th><th>Rol</th><th>Auth Vinculado</th>';
+                    html += '</tr></thead><tbody>';
+
+                    dbUsers.forEach(user => {
+                        html += '<tr>';
+                        html += `<td>${user.email}</td>`;
+                        html += `<td>${user.nombre}</td>`;
+                        html += `<td>${user.apellido}</td>`;
+                        html += `<td>${user.rol}</td>`;
+                        html += `<td class="${user.auth_user_id ? 'status-ok' : 'status-error'}">`;
+                        html += user.auth_user_id ? '✅ Sí' : '❌ No';
+                        html += `</td>`;
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<p class="status-error">❌ No se encontraron usuarios en la tabla</p>';
+                }
+
+                // Verificar usuarios esperados
+                html += '<h4style="margin-top: 30px;">Verificación de Usuarios Base:</h4>';
+                const expectedUsers = [
+                    { email: 'admin@institutocajas.edu.pe', rol: 'administrador' },
+                    { email: 'investigador@institutocajas.edu.pe', rol: 'investigador' },
+                    { email: 'evaluador@institutocajas.edu.pe', rol: 'evaluador' }
+                ];
+
+                html += '<div class="user-grid">';
+                expectedUsers.forEach(expected => {
+                    const found = dbUsers.find(u => u.email === expected.email);
+                    const exists = found ? 'status-ok' : 'status-error';
+
+                    html += '<div class="user-card" style="border-color: ' + (found ? '#48bb78' : '#f56565') + '">';
+                    html += `<h3>${expected.rol.toUpperCase()}</h3>`;
+                    html += `<div class="field"><span class="label">Email:</span><span class="value">${expected.email}</span></div>`;
+                    html += `<div class="field"><span class="label">Estado:</span><span class="${exists}">${found ? '✅ EXISTE' : '❌ NO EXISTE'}</span></div>`;
+                    if (found) {
+                        html += `<div class="field"><span class="label">Nombre:</span><span class="value">${found.nombre} ${found.apellido}</span></div>`;
+                        html += `<div class="field"><span class="label">Rol:</span><span class="value">${found.rol}</span></div>`;
+                        html += `<div class="field"><span class="label">Auth ID:</span><span class="value">${found.auth_user_id ? '✅' : '❌'}</span></div>`;
+                    }
+                    html += '</div>';
+                });
+                html += '</div>';
+
+                resultsDiv.innerHTML = html;
+                log('Verificación completada exitosamente', 'success');
+
+            } catch (error) {
+                log(`Error en verificación: ${error.message}`, 'error');
+                resultsDiv.innerHTML = `<p class="status-error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function probarLogin(email, password) {
+            log(`Intentando login: ${email}`, 'info');
+            resultsDiv.innerHTML = '<p><em>Probando login...</em></p>';
+
+            try {
+                const result = await SupabaseManager.login(email, password);
+
+                if (result.error) {
+                    log(`❌ Login fallido: ${result.error}`, 'error');
+                    resultsDiv.innerHTML = `
+                        <h3>❌ Login Fallido</h3>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Error:</strong> ${result.error}</p>
+                    `;
+                } else {
+                    log(`✅ Login exitoso: ${email}`, 'success');
+                    const user = result.userData;
+                    resultsDiv.innerHTML = `
+                        <h3>✅ Login Exitoso</h3>
+                        <div class="user-card" style="border-color: #48bb78;">
+                            <div class="field"><span class="label">Email:</span><span class="value">${user.email}</span></div>
+                            <div class="field"><span class="label">Nombre:</span><span class="value">${user.nombre} ${user.apellido}</span></div>
+                            <div class="field"><span class="label">Rol:</span><span class="value">${user.rol}</span></div>
+                            <div class="field"><span class="label">ID:</span><span class="value">${user.id}</span></div>
+                        </div>
+                        <p style="margin-top: 20px;"><em>Cerrando sesión...</em></p>
+                    `;
+
+                    // Cerrar sesión automáticamente
+                    setTimeout(async () => {
+                        await SupabaseManager.logout();
+                        log(`Sesión cerrada para ${email}`, 'info');
+                    }, 2000);
+                }
+
+            } catch (error) {
+                log(`Error en login: ${error.message}`, 'error');
+                resultsDiv.innerHTML = `<p class="status-error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Auto-verificar al cargar
+        window.addEventListener('supabaseReady', () => {
+            log('Supabase inicializado correctamente', 'success');
+            log('Haz clic en "Verificar Usuarios" para comenzar', 'info');
+        });
+    </script>
+</body>
+
+</html>

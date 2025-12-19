@@ -214,7 +214,7 @@ function generateEmail() {
 }
 
 // Manejar creación de usuario
-function handleCrearUsuario(e) {
+async function handleCrearUsuario(e) {
     e.preventDefault();
 
     const nombre = document.getElementById('nombre').value.trim();
@@ -233,37 +233,62 @@ function handleCrearUsuario(e) {
         return;
     }
 
-    // Aquí usamos la misma lógica del correo
+    // Generar email institucional
     const email = generarCorreoInstituto(nombre, apellido);
 
+    try {
+        console.log('Creando usuario en Supabase Auth...', email);
 
-    // Verificar si el email ya existe
-    const usuarios = StorageManager.getItem('usuarios') || [];
-    const emailExists = usuarios.some(u => u.email === email);
+        // 1. Crear usuario en Supabase Auth
+        const { data: authData, error: authError } = await SupabaseManager.createUser(email, password);
 
-    if (emailExists) {
-        showNotification('Ya existe un usuario con ese email', 'error');
-        return;
+        if (authError) {
+            console.error('Error al crear usuario en Auth:', authError);
+
+            // Si el error es que el usuario ya existe, intentar crearlo solo en la tabla
+            if (authError.message && authError.message.includes('already registered')) {
+                showNotification('El email ya está registrado en el sistema', 'error');
+                return;
+            }
+
+            throw authError;
+        }
+
+        console.log('Usuario creado en Auth:', authData);
+
+        // 2. Insertar en tabla usuarios con el auth_user_id
+        const { data: userData, error: userError } = await supabase
+            .from('usuarios')
+            .insert([{
+                nombre: nombre,
+                apellido: apellido,
+                email: email,
+                rol: rol,
+                auth_user_id: authData.user.id
+            }])
+            .select()
+            .single();
+
+        if (userError) {
+            console.error('Error al insertar en tabla usuarios:', userError);
+            // Si falla la inserción en la tabla, deberíamos eliminar el usuario de Auth
+            // pero Supabase no permite eliminar usuarios desde el cliente por seguridad
+            throw userError;
+        }
+
+        console.log('Usuario insertado en tabla usuarios:', userData);
+
+        showNotification(`Usuario ${nombre} ${apellido} creado exitosamente`, 'success');
+        cerrarModalCrearUsuario();
+
+        // Recargar tabla de usuarios
+        await cargarTablaUsuarios();
+        await loadAdminStats();
+
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        showNotification('Error al crear usuario: ' + (error.message || 'Error desconocido'), 'error');
     }
-
-    // Crear nuevo usuario
-    const nuevoUsuario = {
-        id: generateId(),
-        nombre: nombre,
-        apellido: apellido,
-        email: email,
-        password: password,
-        rol: rol,
-        fechaCreacion: new Date().toISOString()
-    };
-
-    usuarios.push(nuevoUsuario);
-    StorageManager.setItem('usuarios', usuarios);
-
-    showNotification('Usuario creado exitosamente', 'success');
-    cerrarModalCrearUsuario();
-    cargarTablaUsuarios();
-    loadAdminStats();
 }
 
 // Eliminar usuario

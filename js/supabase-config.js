@@ -452,6 +452,38 @@ class SupabaseManager {
             return null;
         }
     }
+
+    /**
+     * Crear nuevo usuario en Supabase Auth
+     * @param {string} email - Email del usuario
+     * @param {string} password - Contraseña del usuario
+     * @returns {Promise} - Promesa con datos del usuario creado
+     */
+    static async createUser(email, password) {
+        try {
+            console.log('📝 Creando nuevo usuario en Supabase Auth:', email);
+
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/dashboard.html`
+                }
+            });
+
+            if (error) {
+                console.error('❌ Error al crear usuario:', error);
+                return { data: null, error };
+            }
+
+            console.log('✅ Usuario creado exitosamente:', data);
+            return { data, error: null };
+
+        } catch (error) {
+            console.error('❌ Error inesperado al crear usuario:', error);
+            return { data: null, error };
+        }
+    }
 }
 
 // Exportar para uso global

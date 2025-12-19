@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Administrador</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/chatbot.css">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-small">
+                    <img src="imagen/logocajas.png" alt="Logo Instituto Cajas" class="logo-sidebar">
+                </div>
+                <h3>IESTP "AACD"</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard-administrador.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" onclick="mostrarGestionUsuarios(event)">
+                    <span class="nav-icon">👥</span>
+                    <span>Gestión de Usuarios</span>
+                </a>
+                <a href="#" class="nav-item" onclick="mostrarGestionFechas(event)">
+                    <span class="nav-icon">📅</span>
+                    <span>Gestión de Fechas</span>
+                </a>
+                <a href="#" class="nav-item" onclick="mostrarReportes(event)">
+                    <span class="nav-icon">📈</span>
+                    <span>Reportes</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <span id="userInitials">AD</span>
+                    </div>
+                    <div class="user-details">
+                        <p class="user-name" id="userName">Administrador</p>
+                        <p class="user-role">Administrador</p>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <span>🚪</span> Salir
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Panel de Administración</h1>
+                <div class="top-bar-actions">
+                    <button class="btn-notification">
+                        <span class="notification-badge">0</span>
+                        🔔
+                    </button>
+                    <div class="user-menu">
+                        <span id="userNameTop">Administrador</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-area" id="contentArea">
+                <!-- Vista Dashboard Principal -->
+                <div id="dashboardView">
+                    <div class="page-header">
+                        <h2>Panel de Control</h2>
+                        <p>Gestiona usuarios y visualiza reportes del sistema</p>
+                    </div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #667eea;">👥</div>
+                            <div class="summary-info">
+                                <h4 id="totalUsuarios">0</h4>
+                                <p>Total Usuarios</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #f093fb;">📁</div>
+                            <div class="summary-info">
+                                <h4 id="totalProyectosAdmin">0</h4>
+                                <p>Total Proyectos</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #4CAF50;">✓</div>
+                            <div class="summary-info">
+                                <h4 id="proyectosAprobadosAdmin">0</h4>
+                                <p>Aprobados</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon" style="background: #f44336;">✗</div>
+                            <div class="summary-info">
+                                <h4 id="proyectosRechazadosAdmin">0</h4>
+                                <p>Rechazados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones Rápidas -->
+                    <div class="admin-actions">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="action-cards">
+                            <div class="action-card" onclick="mostrarGestionUsuarios(event)">
+                                <div class="action-icon">👥</div>
+                                <h4>Gestionar Usuarios</h4>
+                                <p>Crear, editar o eliminar usuarios</p>
+                            </div>
+                            <div class="action-card" onclick="mostrarReportes(event)">
+                                <div class="action-icon">📊</div>
+                                <h4>Ver Reportes</h4>
+                                <p>Consultar estadísticas y reportes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista Gestión de Usuarios -->
+                <div id="gestionUsuariosView" style="display: none;">
+                    <div class="page-header">
+                        <h2>Gestión de Usuarios</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-primary" onclick="mostrarModalCrearUsuario()">
+                                + Crear Nuevo Usuario
+                            </button>
+                            <button class="btn-primary" onclick="mostrarModalImportarUsuarios()"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                📊 Importar desde Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Usuarios -->
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usuariosTableBody">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vista Reportes -->
+                <div id="reportesView" style="display: none;">
+                    <div class="page-header">
+                        <h2>Reportes del Sistema</h2>
+                    </div>
+
+                    <div class="reports-section">
+                        <div class="report-card">
+                            <h3>Reporte de Proyectos</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Título</th>
+                                            <th>Categoría</th>
+                                            <th>Investigador</th>
+                                            <th>Estado</th>
+                                            <th>Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportesProyectosBody">
+                                        <!-- Se llenará dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Crear Usuario -->
+    <div id="modalCrearUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear Nuevo Usuario</h3>
+                <button class="modal-close" onclick="cerrarModalCrearUsuario()">&times;</button>
+            </div>
+            <form id="formCrearUsuario" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" required placeholder="Ej: Eduardo">
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" required placeholder="Ej: Palomino">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Generado</label>
+                    <div class="email-preview">
+                        <input type="text" id="emailGenerado" readonly value="@institutocajas.edu.pe">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label for="rol">Rol</label>
+                        <select id="rol" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="investigador">Investigador</option>
+                            <option value="evaluador">Evaluador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalCrearUsuario()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Crear Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Importar Usuarios desde Excel -->
+    <div id="modalImportarUsuarios" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>📊 Importar Usuarios desde Excel</h3>
+                <button class="modal-close" onclick="cerrarModalImportarUsuarios()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Instrucciones -->
+                <div
+                    style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                    <h4 style="margin: 0 0 10px 0; color: #333;">📝 Formato del archivo Excel</h4>
+                    <ul style="margin: 5px 0; padding-left: 20px; color: #555;">
+                        <li>El archivo debe tener <strong>dos columnas</strong>: <code>Nombres</code> y
+                            <code>Apellidos</code>
+                        </li>
+                        <li>La primera fila puede contener encabezados (se ignorará automáticamente)</li>
+                        <li>Los correos se generarán automáticamente con el formato:
+                            <code>inicial+apellido1+inicial2@institutocajas.edu.pe</code>
+                        </li>
+                        <li>Todos los usuarios tendrán la contraseña: <strong>123456</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Carga de archivo -->
+                <div class="form-group">
+                    <label for="archivoExcel">Seleccionar archivo Excel</label>
+                    <input type="file" id="archivoExcel" accept=".xlsx,.xls"
+                        onchange="procesarArchivoExcel(this.files[0])"
+                        style="width: 100%; padding: 10px; border: 2px dashed #667eea; border-radius: 8px; background: #f8f9ff;">
+                </div>
+
+                <!-- Selección de rol -->
+                <div class="form-group" id="rolSelectionContainer" style="display: none;">
+                    <label for="rolImportacion">Rol para todos los usuarios</label>
+                    <select id="rolImportacion" class="form-control">
+                        <option value="">Seleccionar...</option>
+                        <option value="investigador">Investigador</option>
+                        <option value="evaluador">Evaluador</option>
+                    </select>
+                </div>
+
+                <!-- Vista previa -->
+                <div id="vistaPrevia" style="display: none; margin-top: 20px;">
+                    <h4 style="color: #333; margin-bottom: 10px;">👥 Vista Previa (<span
+                            id="totalUsuariosPreview">0</span> usuarios)</h4>
+                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <table class="data-table" style="margin: 0;">
+                            <thead>
+                                <tr>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th>Correo Generado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPrevistaUsuarios">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mensaje de estado -->
+                <div id="mensajeEstado" style="display: none; margin-top: 15px;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="cerrarModalImportarUsuarios()">Cancelar</button>
+                <button type="button" id="btnConfirmarImportacion" class="btn-primary"
+                    onclick="procesarImportacionMasiva()" style="display: none;">
+                    ✓ Importar Usuarios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SheetJS Library for Excel parsing -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Supabase Client -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+
+
+
+    <!-- Scripts -->
+
+
+    <script src="js/supabase-config.js"></script>
+
+
+    <script src="js/main.js"></script>
+    <script src="js/administrador.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+
+</html>
