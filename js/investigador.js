@@ -6,16 +6,16 @@
 let currentCategory = null;
 
 // Inicializacion
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     if (window.location.pathname.includes('dashboard-investigador')) {
-        checkRole(['investigador']);
-        updateUserInfo();
+        await checkRole(['investigador']);
+        await updateUserInfo();
         loadDashboardStats();
         loadCategoryCounts();
     }
 
     if (window.location.pathname.includes('categoria-proyectos')) {
-        checkRole(['investigador', 'evaluador']);
+        await checkRole(['investigador', 'evaluador']);
         loadCategoryFromURL();
     }
 

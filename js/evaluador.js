@@ -7,16 +7,16 @@ let currentEvaluationProject = null;
 let currentPasoEvaluacion = 1;
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     if (window.location.pathname.includes('dashboard-evaluador')) {
-        checkRole(['evaluador']);
-        updateUserInfo();
+        await checkRole(['evaluador']);
+        await updateUserInfo();
         loadEvaluadorStats();
         loadPendingCounts();
     }
 
     if (window.location.pathname.includes('evaluar-proyecto')) {
-        checkRole(['evaluador']);
+        await checkRole(['evaluador']);
         setupEvaluationForm();
     }
 });

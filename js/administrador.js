@@ -3,10 +3,10 @@
    ==================================== */
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     if (window.location.pathname.includes('dashboard-administrador')) {
-        checkRole(['administrador']);
-        updateUserInfo();
+        await checkRole(['administrador']);
+        await updateUserInfo();
         loadAdminStats();
     }
 });

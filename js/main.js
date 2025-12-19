@@ -78,10 +78,12 @@ function initDemoData() {
 // Obtener usuario actual (ahora asíncrono con Supabase)
 async function getCurrentUser() {
     try {
+        console.log('🔍 getCurrentUser: Intentando obtener usuario...');
         const userData = await SupabaseManager.getCurrentUser();
+        console.log('📦 getCurrentUser: Resultado =', userData);
         return userData;
     } catch (error) {
-        console.error('Error al obtener usuario actual:', error);
+        console.error('❌ Error al obtener usuario actual:', error);
         return null;
     }
 }
@@ -110,12 +112,12 @@ async function checkAuth() {
     return currentUser;
 }
 
-// Verificar rol de usuario
-function checkRole(allowedRoles) {
-    const user = getCurrentUser();
+// Verificar rol de usuario (ahora asíncrono)
+async function checkRole(allowedRoles) {
+    const user = await getCurrentUser();
     if (!user || !allowedRoles.includes(user.rol)) {
         alert('No tienes permisos para acceder a esta página');
-        logout();
+        await logout();
         return false;
     }
     return true;

@@ -2,21 +2,21 @@
    SUPABASE-CONFIG.JS - Configuración Supabase
    ==================================== */
 
-// PROYECTO: ISTPCAJAS (cymcihznzdbrqfogrlwr)
-// Configuración actualizada: 2025-12-09
+// PROYECTO: ISTCAJASCHAT (lfegqescnkegwjpgcesj)
+// Configuración actualizada: 2025-12-18
 
-const SUPABASE_URL = 'https://cymcihznzdbrqfogrlwr.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5bWNpaHpuemRicnFmb2dybHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyMDY2MjIsImV4cCI6MjA4MDc4MjYyMn0.K-5INbUCSoI_mxtjfeOnMNQXkJkNM0g28YwH3VRBuMY';
+const SUPABASE_URL = 'https://lfegqescnkegwjpgcesj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmZWdxZXNjbmtlZ3dqcGdjZXNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMDM3NzQsImV4cCI6MjA4MTY3OTc3NH0.7fAi3bU0O7nVDfoYGqyQ_SHUBwgvKpLeA3AiDYxTkUA';
 
 // Inicializar cliente de Supabase
 // Guardar referencia a la librería
 const supabaseLib = window.supabase;
 
-// Crear cliente de Supabase
-const supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Crear cliente de Supabase (usar var para permitir reasignación)
+var supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =============================================
-// SUPABASE MANAGER - Reemplazo de StorageManager
+// SUPABASE MANAGER - Gestión de Base de Datos
 // =============================================
 
 class SupabaseManager {
@@ -49,7 +49,7 @@ class SupabaseManager {
             // 1. Crear usuario en Auth (con email y password temporal)
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: userData.email,
-                password: userData.password || 'TempPassword123!', // Password temporal
+                password: userData.password || 'TempPassword123!',
                 options: {
                     data: {
                         nombre: userData.nombre,
@@ -416,10 +416,22 @@ class SupabaseManager {
      */
     static async getCurrentUser() {
         try {
+            console.log('🔐 SupabaseManager.getCurrentUser: Obteniendo usuario de Auth...');
             const { data: { user }, error } = await supabase.auth.getUser();
-            if (error) throw error;
 
-            if (!user) return null;
+            if (error) {
+                console.error('❌ Error en auth.getUser():', error);
+                throw error;
+            }
+
+            console.log('👤 Usuario de Auth:', user);
+
+            if (!user) {
+                console.warn('⚠️ No hay usuario autenticado en Auth');
+                return null;
+            }
+
+            console.log('🔍 Buscando en tabla usuarios con auth_user_id:', user.id);
 
             // Obtener datos completos
             const { data: userData, error: userError } = await supabase
@@ -428,10 +440,15 @@ class SupabaseManager {
                 .eq('auth_user_id', user.id)
                 .single();
 
-            if (userError) throw userError;
+            if (userError) {
+                console.error('❌ Error al buscar en tabla usuarios:', userError);
+                throw userError;
+            }
+
+            console.log('✅ Datos del usuario encontrados:', userData);
             return userData;
         } catch (error) {
-            console.error('Error al obtener usuario actual:', error);
+            console.error('❌ Error al obtener usuario actual:', error);
             return null;
         }
     }
@@ -451,6 +468,10 @@ supabase.auth.onAuthStateChange((event, session) => {
     }
 });
 
-console.log('✅ Supabase configurado correctamente');
+console.log('✅ Supabase configurado correctamente - Proyecto: ISTCAJASCHAT');
+console.log('📦 Exportando a window:', { supabase: !!window.supabase, SupabaseManager: !!window.SupabaseManager });
 
-
+// Disparar evento personalizado para notificar que Supabase está listo
+console.log('🚀 Disparando evento supabaseReady');
+window.dispatchEvent(new CustomEvent('supabaseReady'));
+console.log('✅ Evento supabaseReady disparado');

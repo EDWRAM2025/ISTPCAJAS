@@ -2,8 +2,8 @@
    AUTH.JS - Autenticación con Supabase
    ==================================== */
 
-// Manejar el formulario de login
-document.addEventListener('DOMContentLoaded', function () {
+// Esperar a que Supabase esté listo
+function initializeAuth() {
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const togglePasswordBtn = document.getElementById('togglePassword');
@@ -63,6 +63,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Verificar si ya hay sesión activa
     checkExistingSession();
+}
+
+// Manejar el formulario de login
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('🔵 DOMContentLoaded fired in auth.js');
+    console.log('🔍 SupabaseManager status:', window.SupabaseManager ? 'DEFINED' : 'NOT DEFINED');
+
+    // Esperar a que Supabase esté listo
+    if (window.SupabaseManager) {
+        console.log('✅ SupabaseManager already defined, initializing auth immediately');
+        initializeAuth();
+    } else {
+        console.log('⏳ SupabaseManager not ready, waiting for supabaseReady event');
+        window.addEventListener('supabaseReady', function () {
+            console.log('🎉 supabaseReady event received! Initializing auth now');
+            initializeAuth();
+        });
+    }
 });
 
 // Verificar sesión existente con Supabase
@@ -117,20 +135,8 @@ async function handleLogin(e) {
     try {
         console.log('📝 Intentando login con email:', email);
 
-        // Mapear emails institucionales ficticios a sus Gmail reales
-        const emailMap = {
-            'admin@institutocajas.edu.pe': 'cordedwinegsep@gmail.com'
-        };
-
-        // Si el email está en el mapa, usar el Gmail real para autenticación
-        const authEmail = emailMap[email.toLowerCase()] || email;
-
-        if (authEmail !== email) {
-            console.log('🔄 Mapeando email ficticio a Gmail real:', authEmail);
-        }
-
-        // Intentar login con Supabase (usando el email real si existe mapeo)
-        const result = await SupabaseManager.login(authEmail, password);
+        // Intentar login con Supabase
+        const result = await SupabaseManager.login(email, password);
 
         console.log('📦 Resultado de login:', result);
 
